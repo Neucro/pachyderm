@@ -42,14 +42,14 @@ func (a *apiServer) master() {
 	backoff.RetryNotify(func() error {
 		ctx, cancel := context.WithCancel(context.Background())
 		defer cancel()
-		// Note: 'pachClient' is unauthenticated. This will use the PPS token (via
-		// a.sudo()) to authenticate requests.
-		pachClient := a.env.GetPachClient(ctx)
 		ctx, err := masterLock.Lock(ctx)
 		if err != nil {
 			return err
 		}
 		defer masterLock.Unlock(ctx)
+		// Note: 'pachClient' is unauthenticated. This will use the PPS token (via
+		// a.sudo()) to authenticate requests.
+		pachClient := a.env.GetPachClient(ctx)
 		kubeClient := a.env.GetKubeClient()
 
 		log.Infof("PPS master: launching master process")
